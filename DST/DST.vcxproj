@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="des.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="smap_gen.cpp" />
   </ItemGroup>
   <ItemGroup>
