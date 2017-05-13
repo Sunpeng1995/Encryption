@@ -15,12 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dst.cpp">
+    <ClCompile Include="des.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smap_gen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dst.h">
+    <ClInclude Include="des.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

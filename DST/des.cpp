@@ -1,44 +1,32 @@
 #include "des.h"
 
-string DES::inital_premute(string iblock) {
-  string oblock(64, '0');
-  for (int i = 0; i < 64; i++) {
-    oblock[i] = iblock[ip_table[i] - 1];
+uint64_t DES::inital_premute(const uint64_t* in, bool reverse) {
+  const int* table = ip_table;
+  if (reverse) {
+    table = rip_table;
   }
-  return oblock;
-};
-
-void DES::inital_premute(char* in, uint8_t* out) {
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++) {
-      uint8_t t = 0;
-      int idx = ip_table[i * 8 + j] - 1;
-      int m = idx / 8;
-      int n = idx % 8;
-      t = in[m] << n;
-      t &= 0x80;
-      t = t >> j;
-      out[i] |= t;
-    }
-  }
-}
-
-uint64_t DES::inital_premute(const uint64_t* in) {
   uint64_t ret = 0;
   for (int i = 0; i < 64; i++) {
-    int idx = ip_table[i] - 1;
+    int idx = table[i] - 1;
     uint64_t b = get_bit(*in, idx);
     set_bit(&ret, i, b);
   }
   return ret;
 }
 
-void DES::encipher_loop(uint64_t in, uint64_t k) {
+uint64_t DES::encipher_loop(uint64_t in, uint64_t k) {
   uint32_t l = in >> 32;
   uint32_t r = in;
-  for (int i = 0; i < 15; i++) {
-    
+  for (int i = 0; i < 16; i++) {
+    uint32_t t_l = r;
+    uint32_t t_r = l ^ f_cal(r, K[i]);
+    l = t_l;
+    r = t_r;
   }
+  uint64_t out = 0;
+  out |= r;
+  out = (out << 32) | l;
+  return inital_premute(&out, 1);
 }
 
 bitset<48> DES::E_trans(uint32_t r) {
@@ -50,6 +38,28 @@ bitset<48> DES::E_trans(uint32_t r) {
   return ret;
 }
 
+uint32_t DES::f_cal(uint32_t r, bitset<48> k) {
+  bitset<48> r_ex = E_trans(r);
+  r_ex ^= k;
+  uint32_t ret = 0;
+  for (int i = 0; i < 8; i++) {
+    ret |= S_table[i][get_subbits(r_ex, i)];
+    if (i != 7) {
+      ret = ret << 4;
+    }
+  }
+  return P_trans(ret);
+}
+
+uint32_t DES::P_trans(uint32_t in) {
+  uint64_t ret = 0;
+  for (int i = 0; i < 32; i++) {
+    uint32_t b = get_bit(in, P_table[i] - 1, 32);
+    set_bit(&ret, i, b, 32);
+  }
+  return static_cast<uint32_t>(ret);
+}
+
 int main() {
   DES dst;
   uint64_t in = dst.raw2bits(string("1234567890abcdef"));
@@ -58,4 +68,8 @@ int main() {
   bitset<48> a = dst.E_trans(dst.raw2bits(string("12345678")));
   cout << a;
   uint32_t b = dst.raw2bits(string("12345678"));
+  uint32_t c = ~0;
+  c = ~(c << 8);
+  uint32_t d = dst.f_cal(0xabcdef12, bitset<48>(0x1234567890ab));
+  return 0;
 }
