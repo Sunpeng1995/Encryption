@@ -3,11 +3,13 @@
 #include <iostream>
 #include <bitset>
 
+#include "K_gen.h"
+
 using namespace std;
 
 class DES {
 public:
-  uint64_t cipher(const uint64_t& data, const uint64_t& key, bool decipher = 0);
+  uint64_t cipher(const uint64_t& data, Kgen K, bool decipher = 0);
 
 private:
 
@@ -97,38 +99,12 @@ private:
     22, 11, 4, 25
   };
 
-  const int PC1_table[56] = {
-    57, 49, 41, 33, 25, 17, 9,
-    1, 58, 50, 42, 34, 26, 18,
-    10, 2, 59, 51, 43, 35, 27,
-    19, 11, 3, 60, 52, 44, 36,
-    63, 55, 47, 39, 31, 23, 15,
-    7, 62, 54, 46, 38, 30, 22,
-    14, 6, 61, 53, 45, 37, 29,
-    21, 13, 5, 28, 20, 12, 4
-  };
-
-  const int PC2_table[48] = {
-    14, 17, 11, 24, 1, 5,
-    3, 28, 15, 6, 21, 10,
-    23, 19, 12, 4, 26, 8,
-    16, 7, 27, 20, 13, 2,
-    41, 52, 31, 37, 47, 55,
-    30, 40, 51, 45, 33, 48,
-    44, 49, 39, 56, 34, 53,
-    46, 42, 50, 36, 29, 32
-  };
-
-  const int l_shifts[16] = {
-    1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1
-  };
 
   uint64_t inital_premute(const uint64_t& in, bool reverse = 0);
-  uint64_t encipher_loop(uint64_t in, bitset<48>* k, bool decipher = 0);
+  uint64_t encipher_loop(uint64_t in, Kgen K, bool decipher = 0);
   bitset<48> E_trans(uint32_t r);
   uint32_t f_cal(uint32_t r, bitset<48> k);
   uint32_t P_trans(uint32_t in);
-  void K_compute(uint64_t key, bitset<48>* Ks);
 
   inline uint8_t get_subbits(bitset<48> bits, int pos) {
     bitset<48> t(0);

@@ -1,4 +1,5 @@
 #include "des.h"
+#include "CipherManager.h"
 
 int main() {
   DES dst;
@@ -13,5 +14,12 @@ int main() {
   else {
     cout << "fuck!" << endl;
   }
+
+  CipherManager m;
+  m.cipherFileByDES("2.txt", "2.txt.des", 0);
+  m.decipherFileByDES("2.txt.des", "2_b.txt", 0);
+
+  m.cipherFileByDES("1.png", "1.png.des", 0);
+  m.decipherFileByDES("1.png.des", "1_b.png", 0);
   return 0;
 }

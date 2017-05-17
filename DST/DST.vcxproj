@@ -140,11 +140,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CipherManager.cpp" />
     <ClCompile Include="des.cpp" />
+    <ClCompile Include="K_gen.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="smap_gen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CipherManager.h" />
     <ClInclude Include="des.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

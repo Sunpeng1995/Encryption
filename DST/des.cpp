@@ -1,10 +1,9 @@
 #include "des.h"
 
-uint64_t DES::cipher(const uint64_t& data, const uint64_t& key, bool decipher) {
+uint64_t DES::cipher(const uint64_t& data, Kgen K , bool decipher) {
   uint64_t i_data = inital_premute(data);
-  bitset<48> k[16];
-  K_compute(key, k);
-  i_data = encipher_loop(i_data, k, decipher);
+
+  i_data = encipher_loop(i_data, K, decipher);
   return inital_premute(i_data, 1);
 }
 
@@ -22,17 +21,17 @@ uint64_t DES::inital_premute(const uint64_t& in, bool reverse) {
   return ret;
 }
 
-uint64_t DES::encipher_loop(uint64_t in, bitset<48>* k, bool decipher) {
+uint64_t DES::encipher_loop(uint64_t in, Kgen K, bool decipher) {
   uint32_t l = in >> 32;
   uint32_t r = in;
   for (int i = 0; i < 16; i++) {
     uint32_t t_l = r;
     uint32_t t_r;
     if (decipher) {
-      t_r = l ^ f_cal(r, k[15 - i]);
+      t_r = l ^ f_cal(r, K.getK(15 - i));
     }
     else {
-      t_r = l ^ f_cal(r, k[i]);
+      t_r = l ^ f_cal(r, K.getK(i));
     }
     l = t_l;
     r = t_r;
@@ -72,26 +71,5 @@ uint32_t DES::P_trans(uint32_t in) {
     set_bit(&ret, i, b, 32);
   }
   return static_cast<uint32_t>(ret);
-}
-
-void DES::K_compute(uint64_t key, bitset<48>* Ks) {
-  bitset<56> key56(0);
-  for (int i = 0; i < 56; i++) {
-    uint8_t t = get_bit(key, PC1_table[i] - 1);
-    key56.set(55 - i, get_bit(key, PC1_table[i] - 1));
-  }
-  bitset<28> c((key56 >> 28).to_ulong());
-  bitset<28> d((key56).to_ullong());
-  for (int i = 0; i < 16; i++) {
-    c = (c << l_shifts[i]) | (c >> (28 - l_shifts[i]));
-    d = (d << l_shifts[i]) | (d >> (28 - l_shifts[i]));
-    bitset<56> t((c.to_ullong() << 28) | d.to_ullong());
-    bitset<48> k;
-    for (int j = 0; j < 48; j++) {
-      k.set(47 - j, t[55 - (PC2_table[j] - 1)]);
-    }
-    Ks[i].reset();
-    Ks[i] |= k;
-  }
 }
 

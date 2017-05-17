@@ -24,9 +24,18 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="K_gen.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CipherManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="des.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CipherManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
