@@ -1,10 +1,24 @@
 #include "des.h"
 
+#define LABELBARGIN 6
+
 uint64_t DES::cipher(const uint64_t& data, Kgen K , bool decipher) {
+  if (need_info) {
+    info << setw(LABELBARGIN) << left << "Input" << ": " << hex << data << endl;
+  }
+
   uint64_t i_data = inital_premute(data);
+  if (need_info) {
+    info << setw(LABELBARGIN) << left << "IP" << ": " << hex << i_data << endl;
+  }
 
   i_data = encipher_loop(i_data, K, decipher);
-  return inital_premute(i_data, 1);
+  uint64_t out = inital_premute(i_data, 1);
+  if (need_info) {
+    info << setw(LABELBARGIN) << left << "IP-1" << ": " << hex << out << endl;
+    info << setw(LABELBARGIN) << left << "Output" << ": " << hex << out << endl;
+  }
+  return out;
 }
 
 uint64_t DES::inital_premute(const uint64_t& in, bool reverse) {
@@ -35,10 +49,22 @@ uint64_t DES::encipher_loop(uint64_t in, Kgen K, bool decipher) {
     }
     l = t_l;
     r = t_r;
+
+    if (need_info && i != 15) {
+      uint64_t m = l;
+      m <<= 32;
+      m |= r;
+      info << setw(LABELBARGIN) << left << dec << i << ": " << hex << m << endl;
+    }
   }
   uint64_t out = 0;
   out |= r;
   out = (out << 32) | l;
+  
+  if (need_info) {
+    info << setw(LABELBARGIN) << left << dec << 15 << ": " << hex << out << endl;
+  }
+
   return out;
 }
 
@@ -73,3 +99,26 @@ uint32_t DES::P_trans(uint32_t in) {
   return static_cast<uint32_t>(ret);
 }
 
+string DES::inital_premute(string in) {
+  stringstream str;
+  str << hex << inital_premute(raw2bits(in));
+  return str.str();
+}
+
+string DES::E_trans(string r) {
+  stringstream str;
+  str << hex << E_trans(raw2bits(r)).to_ullong();
+  return str.str();
+}
+
+string DES::f_cal(string r, string k) {
+  stringstream str;
+  str << hex << f_cal(raw2bits(r), raw2bits(k));
+  return str.str();
+}
+
+string DES::Xor(string l, string r) {
+  stringstream str;
+  str << hex << (raw2bits(l) ^ raw2bits(r));
+  return str.str();
+}

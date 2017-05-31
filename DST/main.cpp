@@ -1,5 +1,6 @@
 #include "des.h"
 #include "CipherManager.h"
+#include <regex>
 
 int main() {
   DES dst;
@@ -16,10 +17,23 @@ int main() {
   }
 
   CipherManager m;
-  m.cipherFileByDES("2.txt", "2.txt.des", 0);
+  
+  m.cipherFileByDES("2.txt", "2.txt.des", "");
   m.decipherFileByDES("2.txt.des", "2_b.txt", 0);
 
   m.cipherFileByDES("1.png", "1.png.des", 0);
   m.decipherFileByDES("1.png.des", "1_b.png", 0);
+
+  m.cipherDigitalByDES("1234567890123456", "1234567890321654");
+  
+
+  string test = m.cipherDigitalByDES("1234567890abcdef", "123");
+  //regex re("[abcdef0-9]{16}");
+  smatch sm;
+  test = "123456789012345e";
+  stringstream s;
+  s << "[abcdef0-9]{" << 16 << "}";
+  regex re(s.str());
+  bool equal = regex_match(test, sm, re);
   return 0;
 }

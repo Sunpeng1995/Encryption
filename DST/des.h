@@ -2,6 +2,8 @@
 #include <string>
 #include <iostream>
 #include <bitset>
+#include <sstream>
+#include <iomanip>
 
 #include "K_gen.h"
 
@@ -10,8 +12,26 @@ using namespace std;
 class DES {
 public:
   uint64_t cipher(const uint64_t& data, Kgen K, bool decipher = 0);
+  inline uint64_t cipher(string data, Kgen K, bool decipher = 0) {
+    return cipher(raw2bits(data), K, decipher);
+  }
+
+  string inital_premute(string in);
+  string E_trans(string r);
+  string f_cal(string r, string k);
+  string Xor(string l, string r);
+
+  string get_info() {
+    string str = info.str();
+    info.str(string());
+    info.clear();
+    return str;
+  }
+
+  bool need_info = false;
 
 private:
+  stringstream info;
 
   const int ip_table[64] = {
       58, 50, 42, 34, 26, 18, 10, 2,
