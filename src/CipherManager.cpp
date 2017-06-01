@@ -17,6 +17,11 @@ int CipherManager::cipherFileByDES(string filepath, string outpath, uint64_t key
   if (!out) {
     return 2;
   }
+  
+  // Add origin length by uint64_t for 3 times
+  for (int i = 0; i < 3; i++) {
+    out.write(static_cast<char*>(static_cast<void*>(&length)), 8);
+  }
 
   char* block;
   block = new char[8];
@@ -24,7 +29,6 @@ int CipherManager::cipherFileByDES(string filepath, string outpath, uint64_t key
   for (int i = 0; i < (length / 8); i++) {
     in.read(block, 8);
     
-    //TODO: reverse order to bin
     uint64_t data = *static_cast<uint64_t*>(static_cast<void*>(block));
     uint64_t odata;
     odata = mDes.cipher(data, K);
@@ -41,7 +45,6 @@ int CipherManager::cipherFileByDES(string filepath, string outpath, uint64_t key
     odata = mDes.cipher(data, K);
     out.write(static_cast<char*>(static_cast<void*>(&odata)), 8);
   }
-  out.write(static_cast<char*>(static_cast<void*>(&length)), 8);
 
   in.close();
   out.close();
@@ -55,6 +58,7 @@ int CipherManager::decipherFileByDES(string filepath, string outpath, uint64_t k
   ifstream in(filepath, ios::binary);
   ofstream out(outpath, ios::binary);
 
+  // Error code for ui
   if (!in) {
     return 1;
   }
@@ -69,14 +73,35 @@ int CipherManager::decipherFileByDES(string filepath, string outpath, uint64_t k
   char* block;
   block = new char[8];
 
-
   in.seekg(0, in.beg);
 
-  // Because the minimum size of decipher file is 2Bytes;
-  for (int i = 0; i < (length / 8) - 2; i++) {
+  // Get and check the correction of origin length
+  uint64_t len[3];
+  for (int i = 0; i < 3; i++) {
+    in.read(block, 8);
+    len[i] = *static_cast<uint64_t*>(static_cast<void*>(block));
+  }
+  uint64_t real_len = 0;
+  if (len[0] == len[1] && len[1] == len[2]) {
+    real_len = len[0];
+  }
+  else if (len[0] == len[1]) {
+    real_len = len[0];
+  }
+  else if (len[0] == len[2]) {
+    real_len = len[0];
+  }
+  else if (len[1] == len[2]) {
+    real_len = len[1];
+  }
+  else {
+    return 3;
+  }
+
+  // Because the minimum size of decipher file is 4Bytes;
+  for (int i = 0; i < (length / 8) - 4; i++) {
     in.read(block, 8);
     
-    //TODO: reverse order to bin
     uint64_t data = *static_cast<uint64_t*>(static_cast<void*>(block));
     uint64_t odata;
     odata = mDes.cipher(data, K, 1);
@@ -89,10 +114,7 @@ int CipherManager::decipherFileByDES(string filepath, string outpath, uint64_t k
   uint64_t odata;
   odata = mDes.cipher(data, K, 1);
 
-  in.read(block, 8);
-  uint64_t real_len = *static_cast<uint64_t*>(static_cast<void*>(block));
-
-  int remain = 8 - (length - 8 - real_len);
+  int remain = 8 - (length - 3*8 - real_len);
   out.write(static_cast<char*>(static_cast<void*>(&odata)), remain);
 
   in.close();
