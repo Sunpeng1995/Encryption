@@ -17,12 +17,18 @@ int main() {
   }
 
   CipherManager m;
-  
-  m.cipherFileByDES("2.txt", "2.txt.des", "");
-  m.decipherFileByDES("2.txt.des", "2_b.txt", 0);
 
-  m.cipherFileByDES("1.png", "1.png.des", 0);
-  m.decipherFileByDES("1.png.des", "1_b.png", 0);
+  //m.cipherFileByDES("1.mkv", "1.mkv.des", "1234");
+  //m.decipherFileByDES("1.mkv.des", "1_b.mkv", "1234");
+  
+  m.cipherFileByDES("./2.txt", "./2.txt.des", "");
+  m.decipherFileByDES("./2.txt.des", "./2_b.txt", 0);
+
+  m.cipherFileByDES("3.jpg", "3.jpg.des", "12");
+  m.decipherFileByDES("3.jpg.des", "3_b.jpg", "12");
+
+  //m.cipherFileByDES("1.png", "1.png.des", 0);
+  //m.decipherFileByDES("1.png.des", "1_b.png", 0);
 
   m.cipherDigitalByDES("1234567890123456", "1234567890321654");
   
