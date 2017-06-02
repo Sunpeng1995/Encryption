@@ -87,6 +87,22 @@ int main() {
   }
 
   printf("\n");
+
+  string inaes("00112233445566778899aabbccddeeff");
+  string keyaes("000102030405060708090a0b0c0d0e0f");
+  string aes_res = m.cipherDigitalByAES(inaes, keyaes);
+  string aes_inv = m.decipherDigitalByAES(aes_res, keyaes);
+  cout << inaes << endl;
+  cout << aes_res << endl;
+  cout << aes_inv << endl;
+
+  m.cipherFileByAES("2.txt", "2.txt.aes", "000102030405060708090a0b0c0d0e0f");
+  m.decipherFileByAES("2.txt.aes", "2_b.txt", "000102030405060708090a0b0c0d0e0f");
+
+  //m.cipherFileByAES("3.jpg", "3.jpg.aes", "000102030405060708090a0b0c0d0e0f");
+  //m.decipherFileByAES("3.jpg.aes", "3_b.jpg", "000102030405060708090a0b0c0d0e0f");
+
+
   system("pause");
   return 0;
 }
