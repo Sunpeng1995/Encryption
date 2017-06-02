@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "QFileDialog"
 #include "QString"
+#include "Qtconcurrent/QtConcurrentRun"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -108,11 +109,13 @@ void MainWindow::open_file_ciphered() {
 }
 
 void MainWindow::handle_file_cipher() {
-    ui->tip_label_2->setText("");
+    ui->tip_label_2->setText("正在加密……");
     QString path_in = ui->uncipher_text_2->text();
     QString path_out = ui->ciphered_text_2->text();
     QString key = ui->key_2->text();
 
+    //QtConcurrent::run(cipher.cipherFileByDES, path_in.toStdString(), path_out.toStdString(), key.toStdString());
+    //int errno = QFuture::result();
     int errno = cipher.cipherFileByDES(path_in.toStdString(), path_out.toStdString(), key.toStdString());
     if (errno == 1) {
         QString s = QStringLiteral("请输入正确的待加密文件路径");
@@ -133,7 +136,7 @@ void MainWindow::handle_file_cipher() {
 }
 
 void MainWindow::handle_file_decipher() {
-    ui->tip_label_2->setText("");
+    ui->tip_label_2->setText("正在加密……");
     QString path_out = ui->uncipher_text_2->text();
     QString path_in = ui->ciphered_text_2->text();
     QString key = ui->key_2->text();

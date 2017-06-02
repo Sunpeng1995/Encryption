@@ -22,18 +22,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += include
 
 SOURCES += \
     src/CipherManager.cpp \
     src/des.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/smap_gen.cpp
+    src/smap_gen.cpp \
+    src/CipherThread.cpp
 
 HEADERS  += include/CipherManager.h \
     include/des.h \
     include/K_gen.h \
-    include/mainwindow.h
+    include/mainwindow.h \
+    include/CipherThread.h
 
 FORMS    += \
     ui/mainwindow.ui
