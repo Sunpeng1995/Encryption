@@ -30,13 +30,15 @@ SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
     src/smap_gen.cpp \
-    src/CipherThread.cpp
+    src/CipherThread.cpp \
+    src/aes.cpp
 
 HEADERS  += include/CipherManager.h \
     include/des.h \
     include/K_gen.h \
     include/mainwindow.h \
-    include/CipherThread.h
+    include/CipherThread.h \
+    include/aes.h
 
 FORMS    += \
     ui/mainwindow.ui
