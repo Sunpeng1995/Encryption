@@ -7,17 +7,12 @@
 #include <regex>
 
 #include "des.h"
+#include "aes.h"
 
 using namespace std;
 
 class CipherManager {
 public:
-  int cipherFileByDES(string filepath, string outpath, uint64_t key);
-  int decipherFileByDES(string filepath, string outpath, uint64_t key);
-
-  string cipherDigitalByDES(string digitals, uint64_t key);
-  string decipherDigitalByDES(string digitals, uint64_t key);
-
   inline string getMidInfo() {
     return DES_Mid_Info;
   }
@@ -53,6 +48,19 @@ public:
     return decipherDigitalByDES(digitals, raw2bits(key));
   }
 
+  string cipherDigitalByAES(string digitals, string key) {
+    return DigitalByAES(digitals, key, false);
+  }
+  string decipherDigitalByAES(string digitals, string key) {
+    return DigitalByAES(digitals, key, true);
+  }
+
+  int cipherFileByAES(string filepath, string outpath, string key);
+  int decipherFileByAES(string filepath, string outpath, string key);
+
+  // The string size of param in must be 32 characters
+  void str2arr(string in, uint8_t* arr);
+
   inline bool is_legal(string digitals) {
     stringstream s;
     s << "[abcdef0-9]{" << digitals.size() << "}";
@@ -62,6 +70,7 @@ public:
   }
 private:
   DES mDes;
+  AES mAes;
   inline uint64_t raw2bits(string raw) {
     if (raw.size() != 16) {
       // cout << "Not a 64bits string!";
@@ -74,4 +83,12 @@ private:
 
   void saveDESKInfo(Kgen k);
   void saveDESMidInfo();
+
+  int cipherFileByDES(string filepath, string outpath, uint64_t key);
+  int decipherFileByDES(string filepath, string outpath, uint64_t key);
+
+  string cipherDigitalByDES(string digitals, uint64_t key);
+  string decipherDigitalByDES(string digitals, uint64_t key);
+
+  string DigitalByAES(string digitals, string key, bool inverse = false);
 };
