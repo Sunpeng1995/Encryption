@@ -1,4 +1,5 @@
 #include "des.h"
+#include "aes.h"
 #include "CipherManager.h"
 #include <regex>
 
@@ -21,11 +22,11 @@ int main() {
   //m.cipherFileByDES("1.mkv", "1.mkv.des", "1234");
   //m.decipherFileByDES("1.mkv.des", "1_b.mkv", "1234");
   
-  m.cipherFileByDES("./2.txt", "./2.txt.des", "");
-  m.decipherFileByDES("./2.txt.des", "./2_b.txt", 0);
+  //m.cipherFileByDES("./2.txt", "./2.txt.des", "");
+  //m.decipherFileByDES("./2.txt.des", "./2_b.txt", 0);
 
-  m.cipherFileByDES("3.jpg", "3.jpg.des", "12");
-  m.decipherFileByDES("3.jpg.des", "3_b.jpg", "12");
+  //m.cipherFileByDES("3.jpg", "3.jpg.des", "12");
+  //m.decipherFileByDES("3.jpg.des", "3_b.jpg", "12");
 
   //m.cipherFileByDES("1.png", "1.png.des", 0);
   //m.decipherFileByDES("1.png.des", "1_b.png", 0);
@@ -41,5 +42,51 @@ int main() {
   s << "[abcdef0-9]{" << 16 << "}";
   regex re(s.str());
   bool equal = regex_match(test, sm, re);
+
+
+  /* 128 bit key */
+  uint8_t key2[] = {
+  0x00, 0x01, 0x02, 0x03,
+  0x04, 0x05, 0x06, 0x07,
+  0x08, 0x09, 0x0a, 0x0b,
+  0x0c, 0x0d, 0x0e, 0x0f };
+
+  uint8_t in[] = {
+      0x00, 0x11, 0x22, 0x33,
+      0x44, 0x55, 0x66, 0x77,
+      0x88, 0x99, 0xaa, 0xbb,
+      0xcc, 0xdd, 0xee, 0xff };
+
+  uint8_t out[16]; // 128
+
+  uint8_t *w; // expanded key
+
+  AES aes;
+
+  w = (uint8_t*)malloc(aes.Nb * (aes.Nr + 1) * 4);
+
+  aes.key_expansion(key2, w);
+
+  aes.cipher(in /* in */, out /* out */, w /* expanded key */);
+
+  printf("out:\n");
+
+  for (int i = 0; i < 4; i++)
+  {
+    printf("%x %x %x %x ", out[4 * i + 0], out[4 * i + 1], out[4 * i + 2], out[4 * i + 3]);
+  }
+
+  printf("\n");
+
+  aes.inv_cipher(out, in, w);
+
+  printf("msg:\n");
+  for (int i = 0; i < 4; i++)
+  {
+    printf("%x %x %x %x ", in[4 * i + 0], in[4 * i + 1], in[4 * i + 2], in[4 * i + 3]);
+  }
+
+  printf("\n");
+  system("pause");
   return 0;
 }
