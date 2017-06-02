@@ -1,7 +1,11 @@
 #pragma once
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <cstdlib>
 #include <cstdint>
+
+using namespace std;
 
 class AES {
 public:
@@ -13,8 +17,49 @@ public:
   void cipher(uint8_t *in, uint8_t *out, uint8_t *w);
   void inv_cipher(uint8_t *in, uint8_t *out, uint8_t *w);
 
+  bool need_info = false;
+
+  string get_mid_info() {
+    string ret = mid_info.str();
+    mid_info.str("");
+    mid_info.clear();
+    return ret;
+  }
+
+  string get_k_info() {
+    string ret = k_info.str();
+    k_info.str("");
+    k_info.clear();
+    return ret;
+  }
+
+  string sub_bytes(string state);
+  string mix_columns(string state);
+  string add_round_key(string state, string key, string round);
+  string shift_rows(string state);
+
 private:
   int K;
+  stringstream mid_info;
+  stringstream k_info;
+  inline void save_info(string prefix, int idx, uint8_t* state) {
+    if (need_info) {
+      mid_info << "R[" << dec << idx << "]." << prefix << ": " << hex;
+      for (int i = 0; i < 16; i++) {
+        mid_info << setw(2) << setfill('0') << +state[i] << " ";
+      }
+      mid_info << endl;
+    }
+  }
+
+  // The string size of param in must be 32 characters
+  void str2arr(string in, uint8_t* arr) {
+    for (int i = 0; i < 16; i++) {
+      string substr = in.substr(i * 2, 2);
+      arr[i] = static_cast<uint8_t>(strtol(substr.c_str(), nullptr, 16));
+    }
+  }
+
   // S-box transformation table
   const uint8_t s_box[256] = {
     // 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f

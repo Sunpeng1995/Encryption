@@ -267,6 +267,15 @@ void AES::key_expansion(uint8_t *key, uint8_t *w)
         w[4 * i + 2] = w[4 * (i - Nk) + 2] ^ tmp[2];
         w[4 * i + 3] = w[4 * (i - Nk) + 3] ^ tmp[3];
     }
+    if (need_info) {
+      for (int i = 0; i < 44; i++) {
+        k_info << "w[" << dec << i << "]" << hex;
+        for (int j = 0; j < 4; j++) {
+          k_info << setw(2) << setfill('0') << +w[4 * i + j] << " ";
+        }
+        k_info << endl;
+      }
+    }
 }
 
 void AES::cipher(uint8_t *in, uint8_t *out, uint8_t *w)
@@ -283,19 +292,43 @@ void AES::cipher(uint8_t *in, uint8_t *out, uint8_t *w)
         }
     }
 
+    // Save mid info
+    save_info("input", 0, in);
+
     add_round_key(state, w, 0);
+    // Save mid info
+    save_info("a_key", 0, state);
 
     for (r = 1; r < Nr; r++)
     {
         sub_bytes(state);
+        // Save mid info
+        save_info("sub_B", r, state);
+
         shift_rows(state);
+        // Save mid info
+        save_info("s_row", r, state);
+
         mix_columns(state);
+        // Save mid info
+        save_info("m_col", r, state);
+
         add_round_key(state, w, r);
+        // Save mid info
+        save_info("a_key", r, state);
     }
 
     sub_bytes(state);
+    // Save mid info
+    save_info("sub_B", 10, state);
+
     shift_rows(state);
+    // Save mid info
+    save_info("s_row", 10, state);
+
     add_round_key(state, w, Nr);
+    // Save mid info
+    save_info("a_key", 10, state);
 
     for (i = 0; i < 4; i++)
     {
@@ -304,6 +337,8 @@ void AES::cipher(uint8_t *in, uint8_t *out, uint8_t *w)
             out[i + 4 * j] = state[Nb * i + j];
         }
     }
+    // Save mid info
+    save_info("output", 10, out);
 }
 
 void AES::inv_cipher(uint8_t *in, uint8_t *out, uint8_t *w)
@@ -320,19 +355,43 @@ void AES::inv_cipher(uint8_t *in, uint8_t *out, uint8_t *w)
         }
     }
 
+    // Save mid info
+    save_info("input", 0, in);
+
     add_round_key(state, w, Nr);
+    // Save mid info
+    save_info("a_key", 0, state);
 
     for (r = Nr - 1; r >= 1; r--)
     {
         inv_shift_rows(state);
+        // Save mid info
+        save_info("s_row", Nr - r, state);
+
         inv_sub_bytes(state);
+        // Save mid info
+        save_info("sub_B", Nr - r, state);
+
         add_round_key(state, w, r);
+        // Save mid info
+        save_info("a_key", Nr - r, state);
+
         inv_mix_columns(state);
+        // Save mid info
+        save_info("m_col", Nr - r, state);
     }
 
     inv_shift_rows(state);
+    // Save mid info
+    save_info("s_row", 10, state);
+
     inv_sub_bytes(state);
+    // Save mid info
+    save_info("sub_B", 10, state);
+
     add_round_key(state, w, 0);
+    // Save mid info
+    save_info("a_key", 10, state);
 
     for (i = 0; i < 4; i++)
     {
@@ -341,4 +400,60 @@ void AES::inv_cipher(uint8_t *in, uint8_t *out, uint8_t *w)
             out[i + 4 * j] = state[Nb * i + j];
         }
     }
+    // Save mid info
+    save_info("output", 10, out);
+}
+
+string AES::sub_bytes(string state) {
+  uint8_t t[16];
+  str2arr(state, t);
+  sub_bytes(t);
+  stringstream s;
+  s << hex;
+  for (int i = 0; i < 16; i++) {
+    s << +(t[i] >> 4);
+    s << +(t[i] & 0x0f);
+  }
+  return s.str();
+}
+
+string AES::mix_columns(string state) {
+  uint8_t t[16];
+  str2arr(state, t);
+  mix_columns(t);
+  stringstream s;
+  s << hex;
+  for (int i = 0; i < 16; i++) {
+    s << +(t[i] >> 4);
+    s << +(t[i] & 0x0f);
+  }
+  return s.str();
+}
+
+string AES::add_round_key(string state, string key, string round) {
+  uint8_t t[16], w[16];
+  str2arr(state, t);
+  str2arr(key, w);
+  int r = stoi(round);
+  add_round_key(t, w, r);
+  stringstream s;
+  s << hex;
+  for (int i = 0; i < 16; i++) {
+    s << +(t[i] >> 4);
+    s << +(t[i] & 0x0f);
+  }
+  return s.str();
+}
+
+string AES::shift_rows(string state) {
+  uint8_t t[16];
+  str2arr(state, t);
+  shift_rows(t);
+  stringstream s;
+  s << hex;
+  for (int i = 0; i < 16; i++) {
+    s << +(t[i] >> 4);
+    s << +(t[i] & 0x0f);
+  }
+  return s.str();
 }
