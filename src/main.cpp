@@ -91,10 +91,19 @@ int main() {
   string inaes("00112233445566778899aabbccddeeff");
   string keyaes("000102030405060708090a0b0c0d0e0f");
   string aes_res = m.cipherDigitalByAES(inaes, keyaes);
+  cout << m.getMidInfoAES();
   string aes_inv = m.decipherDigitalByAES(aes_res, keyaes);
+  cout << m.getMidInfoAES();
+  cout << m.getKInfoAES();
   cout << inaes << endl;
   cout << aes_res << endl;
   cout << aes_inv << endl;
+
+  cout << "calculation AES" << endl;
+  cout << m.calMixColByAes("00112233445566778899aabbccddeeff") << endl;
+  cout << m.calSubByAES("00112233445566778899aabbccddeeff") << endl;
+  cout << m.calShiftRowByAES("00112233445566778899aabbccddeeff") << endl;
+  cout << m.calAddRKeyByAes("00112233445566778899aabbccddeeff", "000102030405060708090a0b0c0d0e0f", "1") << endl;
 
   m.cipherFileByAES("2.txt", "2.txt.aes", "000102030405060708090a0b0c0d0e0f");
   m.decipherFileByAES("2.txt.aes", "2_b.txt", "000102030405060708090a0b0c0d0e0f");

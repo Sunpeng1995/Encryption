@@ -168,13 +168,6 @@ void CipherManager::saveDESMidInfo() {
 
 }
 
-void CipherManager::str2arr(string in, uint8_t* arr) {
-  for (int i = 0; i < 16; i++) {
-    string substr = in.substr(i * 2, 2);
-    arr[i] = static_cast<uint8_t>(strtol(substr.c_str(), nullptr, 16));
-  }
-}
-
 string CipherManager::DigitalByAES(string digitals, string key, bool inverse) {
   if (digitals.size() != 32 || key.size() != 32) {
     return string("");
@@ -188,6 +181,8 @@ string CipherManager::DigitalByAES(string digitals, string key, bool inverse) {
   // expanded key
   uint8_t w[4 * 44];
 
+  mAes.need_info = true;
+
   mAes.key_expansion(key_arr, w);
   if (!inverse) {
     mAes.cipher(data, out, w);
@@ -195,6 +190,11 @@ string CipherManager::DigitalByAES(string digitals, string key, bool inverse) {
   else {
     mAes.inv_cipher(data, out, w);
   }
+
+  mAes.need_info = false;
+
+  AES_K_Info = mAes.get_k_info();
+  AES_Mid_Info = mAes.get_mid_info();
 
   stringstream s;
   for (int i = 0; i < 16; i++) {

@@ -21,6 +21,14 @@ public:
     return DES_K_Info;
   }
 
+  inline string getMidInfoAES() {
+    return AES_Mid_Info;
+  }
+
+  inline string getKInfoAES() {
+    return AES_K_Info;
+  }
+
   inline string calIPByDES(string in) {
     return mDes.inital_premute(in);
   }
@@ -32,6 +40,19 @@ public:
   }
   inline string calXor(string l, string r) {
     return mDes.Xor(l, r);
+  }
+
+  inline string calSubByAES(string s) {
+    return mAes.sub_bytes(s);
+  }
+  inline string calShiftRowByAES(string s) {
+    return mAes.shift_rows(s);
+  }
+  inline string calMixColByAes(string s) {
+    return mAes.mix_columns(s);
+  }
+  inline string calAddRKeyByAes(string s, string k, string r) {
+    return mAes.add_round_key(s, k, r);
   }
 
   inline int cipherFileByDES(string filepath, string outpath, string key) {
@@ -59,7 +80,12 @@ public:
   int decipherFileByAES(string filepath, string outpath, string key);
 
   // The string size of param in must be 32 characters
-  void str2arr(string in, uint8_t* arr);
+  void str2arr(string in, uint8_t* arr) {
+    for (int i = 0; i < 16; i++) {
+      string substr = in.substr(i * 2, 2);
+      arr[i] = static_cast<uint8_t>(strtol(substr.c_str(), nullptr, 16));
+    }
+  }
 
   inline bool is_legal(string digitals) {
     stringstream s;
@@ -80,6 +106,8 @@ private:
   }
   string DES_K_Info;
   string DES_Mid_Info;
+  string AES_K_Info;
+  string AES_Mid_Info;
 
   void saveDESKInfo(Kgen k);
   void saveDESMidInfo();
