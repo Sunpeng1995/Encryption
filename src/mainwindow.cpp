@@ -57,8 +57,9 @@ void MainWindow::handle_cipher() {
         return;
     }
     if (key.size() != 16) {
-        QString s = QStringLiteral("密钥不足64bit，将自动用0填充空位");
+        QString s = QStringLiteral("密钥不足64bit，请输入正确长度的密钥");
         ui->tip_label->setText(s);
+        return;
     }
     std::string ciphered_data(cipher.cipherDigitalByDES(digitals, key));
     std::string K_info = cipher.getKInfo();
@@ -93,8 +94,9 @@ void MainWindow::handle_decipher() {
         return;
     }
     if (key.size() != 16) {
-        QString s = QStringLiteral("密钥不足64bit，将自动用0填充空位");
+        QString s = QStringLiteral("密钥不足64bit，请输入正确长度的密钥");
         ui->tip_label->setText(s);
+        return;
     }
     std::string ciphered_data(cipher.decipherDigitalByDES(digitals, key));
     std::string K_info = cipher.getKInfo();
@@ -124,6 +126,16 @@ void MainWindow::handle_file_cipher() {
     QString path_out = ui->ciphered_text_2->text();
     QString key = ui->key_2->text();
 
+    if (key.size() != 16) {
+        QString s = QStringLiteral("密钥不足64bit，请输入正确长度的密钥");
+        ui->tip_label_2->setText(s);
+        return;
+    }
+    if (!cipher.is_legal(key.toStdString())) {
+        QString s = QStringLiteral("请输入正确的16进制密钥");
+        ui->tip_label_2->setText(s);
+        return;
+    }
     //QtConcurrent::run(cipher.cipherFileByDES, path_in.toStdString(), path_out.toStdString(), key.toStdString());
     //int errno = QFuture::result();
     int errno = cipher.cipherFileByDES(path_in.toStdString(), path_out.toStdString(), key.toStdString());
@@ -134,10 +146,11 @@ void MainWindow::handle_file_cipher() {
     }
     else if (errno == 2) {
         QString s = QStringLiteral("请输入正确的输出路径");
+        ui->tip_label_2->setText(s);
         return;
     }
-    if (key.size() != 16) {
-        QString s = QStringLiteral("加密成功！密钥不足64bit，将自动用0填充空位");
+    else if (errno == 3) {
+        QString s = QStringLiteral("文件为空");
         ui->tip_label_2->setText(s);
         return;
     }
@@ -151,6 +164,16 @@ void MainWindow::handle_file_decipher() {
     QString path_in = ui->ciphered_text_2->text();
     QString key = ui->key_2->text();
 
+    if (key.size() != 16) {
+        QString s = QStringLiteral("密钥不足64bit，请输入正确长度的密钥");
+        ui->tip_label_2->setText(s);
+        return;
+    }
+    if (!cipher.is_legal(key.toStdString())) {
+        QString s = QStringLiteral("请输入正确的16进制密钥");
+        ui->tip_label_2->setText(s);
+        return;
+    }
     int errno = cipher.decipherFileByDES(path_in.toStdString(), path_out.toStdString(), key.toStdString());
     if (errno == 1) {
         QString s = QStringLiteral("请输入正确的待解密文件路径");
@@ -167,11 +190,7 @@ void MainWindow::handle_file_decipher() {
         ui->tip_label_2->setText(s);
         return;
     }
-    if (key.size() != 16) {
-        QString s = QStringLiteral("解密成功！密钥不足64bit，将自动用0填充空位");
-        ui->tip_label_2->setText(s);
-        return;
-    }
+
     QString s = QStringLiteral("解密成功");
     ui->tip_label_2->setText(s);
 }
@@ -342,6 +361,11 @@ void MainWindow::handle_file_cipher_aes() {
         ui->tip_file_label_aes->setText(s);
         return;
     }
+    if (!cipher.is_legal(key.toStdString())) {
+        QString s = QStringLiteral("请输入正确的16进制密钥");
+        ui->tip_file_label_aes->setText(s);
+        return;
+    }
     //QtConcurrent::run(cipher.cipherFileByDES, path_in.toStdString(), path_out.toStdString(), key.toStdString());
     //int errno = QFuture::result();
     int errno = cipher.cipherFileByAES(path_in.toStdString(), path_out.toStdString(), key.toStdString());
@@ -368,6 +392,11 @@ void MainWindow::handle_file_decipher_aes() {
 
     if (key.size() != 32) {
         QString s = QStringLiteral("密钥不足128bit，请输入正确长度的密钥");
+        ui->tip_file_label_aes->setText(s);
+        return;
+    }
+    if (!cipher.is_legal(key.toStdString())) {
+        QString s = QStringLiteral("请输入正确的16进制密钥");
         ui->tip_file_label_aes->setText(s);
         return;
     }
