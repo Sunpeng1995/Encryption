@@ -18,6 +18,10 @@ int CipherManager::cipherFileByDES(string filepath, string outpath, uint64_t key
   uint64_t length = in.tellg();
   in.seekg(0, in.beg);
 
+  if (length == 0) {
+    return 3;
+  }
+
   // Add origin length by uint64_t for 3 times
   for (int i = 0; i < 3; i++) {
     out.write(static_cast<char*>(static_cast<void*>(&length)), 8);
@@ -69,6 +73,10 @@ int CipherManager::decipherFileByDES(string filepath, string outpath, uint64_t k
 
   in.seekg(0, in.end);
   uint64_t length = in.tellg();
+
+  if (length < 24) {
+    return 3;
+  }
 
   char* block;
   block = new char[8];
@@ -228,6 +236,10 @@ int CipherManager::cipherFileByAES(string filepath, string outpath, string key) 
   in.seekg(0, in.beg);
   uint64_t padding = 0;
 
+  if (length == 0) {
+    return 3;
+  }
+
   // Add origin length by 128bit for 3 times
   for (int i = 0; i < 3; i++) {
     out.write(static_cast<char*>(static_cast<void*>(&padding)), 8);
@@ -269,6 +281,10 @@ int CipherManager::decipherFileByAES(string filepath, string outpath, string key
 
   in.seekg(0, in.end);
   uint64_t length = in.tellg();
+
+  if (length < 48) {
+    return 3;
+  }
 
   char* block;
   block = new char[16];
